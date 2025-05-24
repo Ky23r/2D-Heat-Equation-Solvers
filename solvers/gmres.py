@@ -13,7 +13,7 @@ from utils.grid_initialization import init_T_grid
 from utils.create_coordinate_axes import create_coordinate_axes
 
 
-def gmres_solver(
+def gmres(
     length_x,
     length_y,
     nx,
