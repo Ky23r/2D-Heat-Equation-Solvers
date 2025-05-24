@@ -51,7 +51,7 @@ def gauss_seidel_with_5point_sor(
     if verbose:
         print("Gauss-Seidel Iterative Method with 5-Point SOR")
         print(f"Computation time: {elapsed_time:.4f}")
-        print(f"The solver converged after {len(error_history)} iterations.\n")
+        print(f"This solver converged after {len(error_history)} iterations.\n")
 
     if plot:
         x, y, _, _ = create_coordinate_axes(length_x, length_y, nx, ny)

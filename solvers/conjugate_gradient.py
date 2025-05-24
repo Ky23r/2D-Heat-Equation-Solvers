@@ -71,7 +71,7 @@ def conjugate_gradient(
         print("Conjugate Gradient Method")
         print(f"Computation time: {elapsed_time:.4f}")
         # print(f"Final residual ∞-norm: {error_history[-1]:.4e}")
-        print(f"Iterations: {len(error_history)}\n")
+        print(f"This solver converged after {len(error_history)} iterations.\n")
 
     T_grid = x_vec.reshape((ny, nx))
 
