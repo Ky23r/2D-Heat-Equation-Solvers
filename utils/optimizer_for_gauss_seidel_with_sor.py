@@ -30,6 +30,11 @@ def find_optimal_omega(
     plot=True,
     verbose=True,
 ):
+    if verbose:
+        print(
+            f"Find optimal relaxation parameter (ω) for {SOLVER_NAMES[solver.__name__]}\n"
+        )
+
     omega_values = np.arange(omega_start, omega_stop, omega_step)
     iteration_counts = np.zeros_like(omega_values)
 

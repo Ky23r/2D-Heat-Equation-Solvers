@@ -61,7 +61,7 @@ def gauss_seidel_with_9point_sor(
     if verbose:
         print("Gauss-Seidel Iterative Method with 9-Point SOR")
         print(f"Computation time: {elapsed_time:.4f}")
-        print(f"Number of iterations are: {len(error_history)}\n")
+        print(f"The solver converged after {len(error_history)} iterations.\n")
 
     if plot:
         x, y, _, _ = create_coordinate_axes(length_x, length_y, nx, ny)
@@ -69,7 +69,7 @@ def gauss_seidel_with_9point_sor(
         plt.contourf(x, y, T_grid, levels=50)
         plt.colorbar()
         plt.title(
-            "Steady-State Temperature Distribution on a 2D Plane\nUsing the Gauss-Seidel Iterative Method with 9-Point SOR"
+            "Steady-State Temperature Distribution in a 2D Plane\nUsing the Gauss-Seidel Iterative Method with 9-Point SOR"
         )
         plt.xlabel("X-axis")
         plt.ylabel("Y-axis")

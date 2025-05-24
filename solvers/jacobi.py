@@ -47,7 +47,7 @@ def jacobi(
     if verbose:
         print("Jacobi Iterative Method")
         print(f"Computation time: {elapsed_time:.4f}")
-        print(f"Number of iterations are: {len(error_history)}\n")
+        print(f"The solver converged after {len(error_history)} iterations.\n")
 
     if plot:
         x, y, _, _ = create_coordinate_axes(length_x, length_y, nx, ny)
@@ -55,7 +55,7 @@ def jacobi(
         plt.contourf(x, y, T_grid, levels=50)
         plt.colorbar()
         plt.title(
-            "Steady-State Temperature Distribution on a 2D Plane\nUsing the Jacobi Iterative Method"
+            "Steady-State Temperature Distribution in a 2D Plane\nUsing the Jacobi Iterative Method"
         )
         plt.xlabel("X-axis")
         plt.ylabel("Y-axis")
