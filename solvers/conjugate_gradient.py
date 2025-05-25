@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 from scipy.sparse import diags
-from scipy.sparse.linalg import cg
 from numpy.linalg import norm
 
 from utils.grid_initialization import init_T_grid
@@ -59,18 +58,30 @@ def conjugate_gradient(
 
     error_history = []
 
-    def _cg_callback(xk):
-        r = b - A.dot(xk)
-        error_history.append(norm(r, np.inf))
+    x_vec = np.zeros(num_cells)
+    r = b - A.dot(x_vec)
+    p = r.copy()
+    rs_old = r.dot(r)
 
     start_time = time.time()
-    x_vec, info = cg(A, b, rtol=convergence_threshold, callback=_cg_callback)
+    while norm(r, np.inf) > convergence_threshold:
+        Ap = A.dot(p)
+        alpha = rs_old / p.dot(Ap)
+        x_vec = x_vec + alpha * p
+        r = r - alpha * Ap
+        rs_new = r.dot(r)
+        error_history.append(norm(r, np.inf))
+        if rs_new == 0:
+            break
+        beta = rs_new / rs_old
+        p = r + beta * p
+        rs_old = rs_new
+
     elapsed_time = time.time() - start_time
 
     if verbose:
         print("Conjugate Gradient Method")
         print(f"Computation time: {elapsed_time:.4f}")
-        # print(f"Final residual ∞-norm: {error_history[-1]:.4e}")
         print(f"This solver converged after {len(error_history)} iterations.\n")
 
     T_grid = x_vec.reshape((ny, nx))
@@ -92,4 +103,4 @@ def conjugate_gradient(
 
 
 if __name__ == "__main__":
-    _, _, _ = conjugate_gradient(1, 1, 50, 50, 1e-4, 400, 200, 300, 300)
+    _, _, _ = conjugate_gradient(1, 1, 20, 20, 1e-4, 400, 200, 300, 300)

@@ -80,7 +80,7 @@ def find_optimal_omega(
         plt.tight_layout()
         plt.show()
 
-    return best_omega
+    return best_omega, omega_values, iteration_counts
 
 
 if __name__ == "__main__":
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     T_bottom, T_top, T_left, T_right = 400, 200, 300, 300
 
-    # _ = find_optimal_omega(
+    # _, _, _ = find_optimal_omega(
     #     gauss_seidel_with_5point_sor,
     #     length_x,
     #     length_y,
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     #     T_right,
     # )
 
-    _ = find_optimal_omega(
+    _, _, _ = find_optimal_omega(
         gauss_seidel_with_9point_sor,
         length_x,
         length_y,

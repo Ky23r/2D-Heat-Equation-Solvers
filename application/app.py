@@ -1,21 +1,23 @@
 import sys, os
 
+from sympy import evaluate
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
 
 from utils.create_coordinate_axes import create_coordinate_axes
+from utils.optimizer_for_gauss_seidel_with_sor import find_optimal_omega
 from solvers.jacobi import jacobi
 from solvers.gauss_seidel import gauss_seidel
 from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
 from solvers.gauss_seidel_with_9point_sor import gauss_seidel_with_9point_sor
 from solvers.conjugate_gradient import conjugate_gradient
-from solvers.gmres import gmres
 
-st.set_page_config(page_title="2D Heat Equation Solvers", layout="wide")
-st.title("2D Heat Equation Solvers")
+# st.set_page_config(page_title="2D Heat Equation Solvers", layout="wide")
+# st.title("2D Heat Equation Solvers")
+st.sidebar.header("Input Values")
 
 length_x_str = st.sidebar.text_input(
     "Enter the domain length in the x-direction", value="1.0"
@@ -108,124 +110,302 @@ if errors:
         st.sidebar.error(error)
     st.stop()
 
-st.sidebar.success("✔︎ All parameters are valid.")
+st.sidebar.success("✔︎ All input values are valid.")
 
 x, y, _, _ = create_coordinate_axes(length_x, length_y, nx, ny)
 
-solver = st.sidebar.selectbox(
-    "Solver Method",
-    [
-        "Jacobi Iterative Method",
-        "Gauss-Seidel Iterative Method",
-        "Gauss-Seidel Iterative Method with 5-Point SOR",
-        "Gauss-Seidel Iterative Method with 9-Point SOR",
-        "Conjugate Gradient Method",
-        "GMRES Method",
-    ],
+execution_mode = st.sidebar.selectbox(
+    "Execution Mode", ("Single-Solver Run", "Convergence Performance Analysis")
 )
 
-omega = None
-if "SOR" in solver:
-    omega = st.sidebar.slider("Relaxation parameter (ω) \u03c9", 1.0, 1.99, 1.5, 0.01)
-
-run = st.sidebar.button("Solve")
-
-
-if run:
-    if solver == "Jacobi Iterative Method":
-        T_grid, error_history, elasped_time = jacobi(
-            length_x,
-            length_y,
-            nx,
-            ny,
-            convergence_threshold,
-            T_bottom,
-            T_top,
-            T_left,
-            T_right,
-            False,
-            False,
-        )
-    elif solver == "Gauss-Seidel Iterative Method":
-        T_grid, error_history, elasped_time = gauss_seidel(
-            length_x,
-            length_y,
-            nx,
-            ny,
-            convergence_threshold,
-            T_bottom,
-            T_top,
-            T_left,
-            T_right,
-            False,
-            False,
-        )
-    elif solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
-        T_grid, error_history, elasped_time = gauss_seidel_with_5point_sor(
-            length_x,
-            length_y,
-            nx,
-            ny,
-            convergence_threshold,
-            omega,
-            T_bottom,
-            T_top,
-            T_left,
-            T_right,
-            False,
-            False,
-        )
-    elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
-        T_grid, error_history, elasped_time = gauss_seidel_with_9point_sor(
-            length_x,
-            length_y,
-            nx,
-            ny,
-            convergence_threshold,
-            omega,
-            T_bottom,
-            T_top,
-            T_left,
-            T_right,
-            False,
-            False,
-        )
-    elif solver == "Conjugate Gradient Method":
-        T_grid, error_history, elasped_time = conjugate_gradient(
-            length_x,
-            length_y,
-            nx,
-            ny,
-            convergence_threshold,
-            T_bottom,
-            T_top,
-            T_left,
-            T_right,
-            False,
-            False,
-        )
-    elif solver == "GMRES Method":
-        T_grid, error_history, elasped_time = gmres(
-            length_x,
-            length_y,
-            nx,
-            ny,
-            convergence_threshold,
-            T_bottom,
-            T_top,
-            T_left,
-            T_right,
-            False,
-            False,
-        )
-
-    st.subheader(
-        f"Steady-State Temperature Distribution in a 2D Plane Using the {solver}"
+if execution_mode == "Single-Solver Run":
+    solver = st.sidebar.selectbox(
+        "Select Solver",
+        [
+            "Jacobi Iterative Method",
+            "Gauss-Seidel Iterative Method",
+            "Gauss-Seidel Iterative Method with 5-Point SOR",
+            "Gauss-Seidel Iterative Method with 9-Point SOR",
+            "Conjugate Gradient Method",
+        ],
     )
-    st.write(f"Computation time: {elasped_time:.4f}")
-    if error_history:
+
+    omega = None
+    find_opt_omega = None
+
+    if (
+        solver == "Gauss-Seidel Iterative Method with 5-Point SOR"
+        or solver == "Gauss-Seidel Iterative Method with 9-Point SOR"
+    ):
+        omega = st.sidebar.slider("Relaxation parameter (ω)", 1.0, 1.99, 1.5, 0.01)
+        find_opt_omega = st.sidebar.button("Find optimal ω automatically")
+
+    if find_opt_omega:
+        if solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
+            func = gauss_seidel_with_5point_sor
+        else:
+            func = gauss_seidel_with_9point_sor
+        best_omega, omega_values, iteration_counts = find_optimal_omega(
+            func,
+            length_x,
+            length_y,
+            nx,
+            ny,
+            convergence_threshold,
+            T_bottom,
+            T_top,
+            T_left,
+            T_right,
+            omega_start=1.0,
+            omega_stop=2.0,
+            omega_step=0.01,
+            plot=False,
+            verbose=False,
+        )
+        omega = best_omega
+        st.sidebar.success(f"Optimal ω = {best_omega:.2f}")
+
+        fig, ax = plt.subplots()
+        ax.plot(omega_values, iteration_counts)
+        ax.set_xlabel("Relaxation Parameter (ω)")
+        ax.set_ylabel("Iterations to Converge")
+        ax.set_title(
+            f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
+        )
+        ax.grid(True)
+        st.pyplot(fig)
+
+    solve = st.sidebar.button("Solve")
+
+    if solve:
+        if solver == "Jacobi Iterative Method":
+            T_grid, error_history, elasped_time = jacobi(
+                length_x,
+                length_y,
+                nx,
+                ny,
+                convergence_threshold,
+                T_bottom,
+                T_top,
+                T_left,
+                T_right,
+                False,
+                False,
+            )
+        elif solver == "Gauss-Seidel Iterative Method":
+            T_grid, error_history, elasped_time = gauss_seidel(
+                length_x,
+                length_y,
+                nx,
+                ny,
+                convergence_threshold,
+                T_bottom,
+                T_top,
+                T_left,
+                T_right,
+                False,
+                False,
+            )
+        elif solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
+            T_grid, error_history, elasped_time = gauss_seidel_with_5point_sor(
+                length_x,
+                length_y,
+                nx,
+                ny,
+                convergence_threshold,
+                omega,
+                T_bottom,
+                T_top,
+                T_left,
+                T_right,
+                False,
+                False,
+            )
+        elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
+            T_grid, error_history, elasped_time = gauss_seidel_with_9point_sor(
+                length_x,
+                length_y,
+                nx,
+                ny,
+                convergence_threshold,
+                omega,
+                T_bottom,
+                T_top,
+                T_left,
+                T_right,
+                False,
+                False,
+            )
+        elif solver == "Conjugate Gradient Method":
+            T_grid, error_history, elasped_time = conjugate_gradient(
+                length_x,
+                length_y,
+                nx,
+                ny,
+                convergence_threshold,
+                T_bottom,
+                T_top,
+                T_left,
+                T_right,
+                False,
+                False,
+            )
+
+        st.subheader(
+            f"Steady-State Temperature Distribution in a 2D Plane Using the {solver}"
+        )
+        st.write(f"Computation time: {elasped_time:.4f}")
         st.write(f"The {solver} converged after {len(error_history)} iterations.\n")
-    fig, ax = plt.subplots()
-    cs = ax.contourf(x, y, T_grid, levels=50)
-    fig.colorbar(cs, ax=ax)
-    st.pyplot(fig)
+        fig, ax = plt.subplots()
+        cs = ax.contourf(x, y, T_grid, levels=50)
+        fig.colorbar(cs, ax=ax)
+        st.pyplot(fig)
+
+elif execution_mode == "Convergence Performance Analysis":
+    st.sidebar.subheader("Evaluating Convergence Rates Across Different Solvers")
+    # selected_solvers = st.sidebar.multiselect(
+    #     "Select Solvers for Convergence Performance Analysis",
+    #     [
+    #         "Jacobi Iterative Method",
+    #         "Gauss-Seidel Iterative Method",
+    #         "Gauss-Seidel Iterative Method with 5-Point SOR",
+    #         "Gauss-Seidel Iterative Method with 9-Point SOR",
+    #         "Conjugate Gradient Method",
+    #     ],
+    # )
+
+    selected_solvers = []
+
+    select_jacobi = st.sidebar.checkbox("Jacobi Iterative Method", value=False)
+    select_gs = st.sidebar.checkbox("Gauss-Seidel Iterative Method", value=False)
+    select_gs_with_5pt_sor = st.sidebar.checkbox(
+        "Gauss-Seidel Iterative Method with 5-Point SOR", value=False
+    )
+    select_gs_with_9pt_sor = st.sidebar.checkbox(
+        "Gauss-Seidel Iterative Method with 9-Point SOR", value=False
+    )
+    select_cg = st.sidebar.checkbox("Conjugate Gradient Method", value=False)
+
+    if select_jacobi:
+        selected_solvers.append("Jacobi Iterative Method")
+    if select_gs:
+        selected_solvers.append("Gauss-Seidel Iterative Method")
+    if select_gs_with_5pt_sor:
+        selected_solvers.append("Gauss-Seidel Iterative Method with 5-Point SOR")
+    if select_gs_with_9pt_sor:
+        selected_solvers.append("Gauss-Seidel Iterative Method with 9-Point SOR")
+    if select_cg:
+        selected_solvers.append("Conjugate Gradient Method")
+
+    omega_for_gs_with_5pt_sor = None
+    omega_for_gs_with_9pt_sor = None
+
+    if "Gauss-Seidel Iterative Method with 5-Point SOR" in selected_solvers:
+        omega_for_gs_with_5pt_sor = st.sidebar.slider(
+            "Relaxation parameter (ω) for Gauss-Seidel Iterative Method with 5-Point SOR",
+            1.0,
+            1.99,
+            1.5,
+            0.01,
+        )
+    if "Gauss-Seidel Iterative Method with 9-Point SOR" in selected_solvers:
+        omega_for_gs_with_9pt_sor = st.sidebar.slider(
+            "Relaxation parameter (ω) for Gauss-Seidel Iterative Method with 9-Point SOR",
+            1.0,
+            1.99,
+            1.5,
+            0.01,
+        )
+
+    evaluate = st.sidebar.button("Evaluate")
+
+    if evaluate and selected_solvers:
+        error_histories, labels = [], []
+        for solver in selected_solvers:
+            if solver == "Jacobi Iterative Method":
+                _, error_history, _ = jacobi(
+                    length_x,
+                    length_y,
+                    nx,
+                    ny,
+                    convergence_threshold,
+                    T_bottom,
+                    T_top,
+                    T_left,
+                    T_right,
+                    False,
+                    False,
+                )
+            elif solver == "Gauss-Seidel Iterative Method":
+                _, error_history, _ = gauss_seidel(
+                    length_x,
+                    length_y,
+                    nx,
+                    ny,
+                    convergence_threshold,
+                    T_bottom,
+                    T_top,
+                    T_left,
+                    T_right,
+                    False,
+                    False,
+                )
+            elif solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
+                _, error_history, _ = gauss_seidel_with_5point_sor(
+                    length_x,
+                    length_y,
+                    nx,
+                    ny,
+                    convergence_threshold,
+                    omega_for_gs_with_5pt_sor,
+                    T_bottom,
+                    T_top,
+                    T_left,
+                    T_right,
+                    False,
+                    False,
+                )
+            elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
+                _, error_history, _ = gauss_seidel_with_9point_sor(
+                    length_x,
+                    length_y,
+                    nx,
+                    ny,
+                    convergence_threshold,
+                    omega_for_gs_with_9pt_sor,
+                    T_bottom,
+                    T_top,
+                    T_left,
+                    T_right,
+                    False,
+                    False,
+                )
+            elif solver == "Conjugate Gradient Method":
+                _, error_history, _ = conjugate_gradient(
+                    length_x,
+                    length_y,
+                    nx,
+                    ny,
+                    convergence_threshold,
+                    T_bottom,
+                    T_top,
+                    T_left,
+                    T_right,
+                    False,
+                    False,
+                )
+            error_histories.append(error_history)
+            labels.append(solver)
+        max_iter = 400
+        fig, ax = plt.subplots()
+        for error_history, label in zip(error_histories, labels):
+            iters_to_plot = min(len(error_history), max_iter)
+            ax.plot(range(iters_to_plot), error_history[:iters_to_plot], label=label)
+        ax.set_xlabel("Iteration Number")
+        ax.set_ylabel("Maximum Absolute Error")
+        ax.set_title(
+            f"Convergence Behavior: Maximum Absolute Error Over Iterations (First {max_iter} Iterations)"
+        )
+        ax.legend()
+        ax.grid(True)
+        st.pyplot(fig)

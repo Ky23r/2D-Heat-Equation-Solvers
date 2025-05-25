@@ -50,7 +50,7 @@ T_top = get_float("Enter the temperature at the top boundary: ")
 T_left = get_float("Enter the temperature at the left boundary: ")
 T_right = get_float("Enter the temperature at the right boundary: ")
 
-# optimal_omega_for_gs_with_5point_sor = find_optimal_omega(
+# optimal_omega_for_gs_with_5point_sor, _, _ = find_optimal_omega(
 #     gauss_seidel_with_5point_sor,
 #     length_x,
 #     length_y,
@@ -68,7 +68,7 @@ T_right = get_float("Enter the temperature at the right boundary: ")
 #     False,
 # )
 
-# optimal_omega_for_gs_with_9point_sor = find_optimal_omega(
+# optimal_omega_for_gs_with_9point_sor, _, _ = find_optimal_omega(
 #     gauss_seidel_with_9point_sor,
 #     length_x,
 #     length_y,
