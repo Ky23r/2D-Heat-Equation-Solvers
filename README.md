@@ -40,11 +40,11 @@ streamlit run app.py
 
 2. **Execution Mode**:
 
-- Single-Solver Run: Select one algorithm, optionally tune or auto-find ω, then click Solve.
+- **Single-Solver Run**: Select one solver, optionally tune or auto-find ω, then click `Solve`.
 
-- Convergence Performance Analysis: Tick multiple solvers, set ω values for SOR if needed, then click Evaluate.
+- **Convergence Performance Analysis**: Tick multiple solvers, set ω values for SOR if needed, then click `Evaluate`.
 
-3. **Output**: View contour plots of the steady-state temperature and/or convergence curves.
+3. **Output**: View contour plots of the steady-state temperature or convergence curves.
 
 ### As a Python script-based version
 
