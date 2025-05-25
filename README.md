@@ -70,7 +70,7 @@ This version provides a command-line interface for running and comparing differe
 
 1. **Input** – Define the domain size, grid resolution, convergence threshold, and fixed boundary temperatures directly in the terminal.
 
-2. **Solver Selection** – Choose one or more solvers to run from a numbered list.
+2. **Solver Selection** – Choose one or more solvers to run.
 
 3. **Execution** – Each selected solver computes the steady-state temperature distribution using the specified parameters.
 
