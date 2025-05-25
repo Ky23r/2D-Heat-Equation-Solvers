@@ -84,6 +84,9 @@ This version provides a command-line interface for running and comparing differe
 ├── main.py
 ├── requirements.txt
 │
+├── application/
+│   └── app.py
+│
 ├── solvers/
 │   ├── jacobi.py
 │   ├── gauss_seidel.py
