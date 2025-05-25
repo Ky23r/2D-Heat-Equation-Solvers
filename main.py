@@ -2,6 +2,7 @@ from solvers.jacobi import jacobi
 from solvers.gauss_seidel import gauss_seidel
 from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
 from solvers.gauss_seidel_with_9point_sor import gauss_seidel_with_9point_sor
+from solvers.conjugate_gradient import conjugate_gradient
 from utils.optimizer_for_gauss_seidel_with_sor import find_optimal_omega
 from utils.convergence_visualization import plot_convergence_curves
 
@@ -136,6 +137,20 @@ _, gs_with_9point_sor_error_history, _ = gauss_seidel_with_9point_sor(
     ny,
     convergence_threshold,
     1.97,
+    T_bottom,
+    T_top,
+    T_left,
+    T_right,
+    False,
+    True,
+)
+
+_, cg_error_history, _ = conjugate_gradient(
+    length_x,
+    length_y,
+    nx,
+    ny,
+    convergence_threshold,
     T_bottom,
     T_top,
     T_left,
