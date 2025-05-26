@@ -1,4 +1,4 @@
-# 2D Heat Equation Solvers
+# 2D Steady-State Heat Equation Solvers
 
 ## Introduction
 
