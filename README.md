@@ -16,7 +16,7 @@ This project provides a comprehensive Python toolkit and an interactive Streamli
 
 ```bash
 git clone https://github.com/Ky23r/2D-Steady-State-Heat-Equation-Solvers.git
-cd 2D-Heat-Equation-Solvers
+cd 2D-Steady-State-Heat-Equation-Solvers
 ```
 
 ### Step 2: Install required libraries
