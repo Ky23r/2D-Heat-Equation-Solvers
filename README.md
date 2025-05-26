@@ -79,7 +79,7 @@ This version provides a command-line interface for running and comparing differe
 ## Project Structure
 
 ```
-2D-Heat-Equation-Solvers/
+2D-Steady-State-Heat-Equation-Solvers/
 │
 ├── main.py
 ├── requirements.txt
