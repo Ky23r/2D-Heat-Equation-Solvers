@@ -11,7 +11,9 @@ def plot_convergence_curves(*error_histories, labels=None, max_iter=400):
     plt.figure()
     for error_history, label in zip(error_histories, labels):
         iters_to_plot = min(len(error_history), max_iter)
-        plt.plot(range(iters_to_plot), error_history[:iters_to_plot], label=label)
+        plt.plot(
+            range(1, iters_to_plot + 1), error_history[:iters_to_plot], label=label
+        )
 
     plt.xlabel("Iteration Number")
     plt.ylabel("Maximum Absolute Error")

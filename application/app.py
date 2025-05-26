@@ -397,15 +397,17 @@ elif execution_mode == "Convergence Performance Analysis":
             error_histories.append(error_history)
             labels.append(solver)
         max_iter = 400
+        st.subheader(
+            f"Convergence Behavior: Maximum Absolute Error Over Iterations (First {max_iter} Iterations)"
+        )
         fig, ax = plt.subplots()
         for error_history, label in zip(error_histories, labels):
             iters_to_plot = min(len(error_history), max_iter)
-            ax.plot(range(iters_to_plot), error_history[:iters_to_plot], label=label)
+            ax.plot(
+                range(1, iters_to_plot + 1), error_history[:iters_to_plot], label=label
+            )
         ax.set_xlabel("Iteration Number")
         ax.set_ylabel("Maximum Absolute Error")
-        ax.set_title(
-            f"Convergence Behavior: Maximum Absolute Error Over Iterations (First {max_iter} Iterations)"
-        )
         ax.legend()
         ax.grid(True)
         st.pyplot(fig)
