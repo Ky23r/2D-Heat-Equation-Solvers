@@ -44,7 +44,7 @@ streamlit run app.py
 
 - **Convergence Performance Analysis**: Tick multiple solvers, set ω values for SOR if needed, then click `Evaluate`.
 
-3. **Output**: View contour plots of the steady-state temperature or convergence curves.
+3. **Output**: Illustrate a graphical representation of the steady-state temperature distribution in the 2D plane, or provide an analysis of the convergence behavior during computation.
 
 ### As a Python script-based version
 
@@ -66,15 +66,17 @@ This version provides a command-line interface for running and comparing differe
 
 - Conjugate Gradient Method
 
-**Workflow**:
+**Execution Flow**:
 
 1. **Input** – Define the domain size, grid resolution, convergence threshold, and fixed boundary temperatures directly in the terminal.
 
-2. **Solver Selection** – Choose one or more solvers to run.
+2. **Computation** – Multiple solvers are executed to compute the steady-state temperature distribution using the specified parameters.
 
-3. **Execution** – Each selected solver computes the steady-state temperature distribution using the specified parameters.
+3. **Output** - Generate two forms of graphical output for result analysis:
 
-4. **Output** – A convergence behavior plot is generated showing the error decay of each selected solver, allowing users to visually compare their performance.
+- A series of contour plots is used to visualize the steady-state temperature distribution computed by each solver.
+
+– A convergence behavior plot is provided, showing the error decay of each selected solver and allowing users to visually compare their performance.
 
 ## Project Structure
 
