@@ -40,9 +40,9 @@ streamlit run app.py
 
 2. **Execution Mode**:
 
-- **Single-Solver Run**: Select one solver, optionally tune or auto-find ω, then click `Solve`.
+   - **Single-Solver Run**: Select one solver, optionally tune or auto-find ω, then click `Solve`.
 
-- **Convergence Performance Analysis**: Tick multiple solvers, set ω values for SOR if needed, then click `Evaluate`.
+   - **Convergence Performance Analysis**: Tick multiple solvers, set ω values for SOR if needed, then click `Evaluate`.
 
 3. **Output**: Illustrate a graphical representation of the steady-state temperature distribution in the 2D plane, or provide an analysis of the convergence behavior during computation.
 
@@ -74,9 +74,9 @@ This version provides a command-line interface for running and comparing differe
 
 3. **Output** - Generate two forms of graphical output for result analysis:
 
-- A series of contour plots is used to visualize the steady-state temperature distribution computed by each solver.
+   - A series of contour plots is used to visualize the steady-state temperature distribution computed by each solver.
 
-- A convergence behavior plot is provided, showing the error decay of each selected solver and allowing users to visually compare their performance.
+   - A convergence behavior plot is provided, showing the error decay of each selected solver and allowing users to visually compare their performance.
 
 ## Project Structure
 
