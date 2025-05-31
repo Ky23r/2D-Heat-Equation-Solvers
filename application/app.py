@@ -160,7 +160,8 @@ if execution_mode == "Single-Solver Run":
             omega_stop=2.0,
             omega_step=0.01,
             plot=False,
-            verbose=False,
+            log_writer=st.write,
+            verbose=True,
         )
         omega = best_omega
         st.sidebar.success(f"Optimal ω = {best_omega:.2f}")
@@ -263,16 +264,6 @@ if execution_mode == "Single-Solver Run":
 
 elif execution_mode == "Convergence Performance Analysis":
     st.sidebar.subheader("Evaluating Convergence Rates Across Different Solvers")
-    # selected_solvers = st.sidebar.multiselect(
-    #     "Select Solvers for Convergence Performance Analysis",
-    #     [
-    #         "Jacobi Iterative Method",
-    #         "Gauss-Seidel Iterative Method",
-    #         "Gauss-Seidel Iterative Method with 5-Point SOR",
-    #         "Gauss-Seidel Iterative Method with 9-Point SOR",
-    #         "Conjugate Gradient Method",
-    #     ],
-    # )
 
     selected_solvers = []
 

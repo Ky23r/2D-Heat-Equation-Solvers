@@ -28,10 +28,11 @@ def find_optimal_omega(
     omega_stop=2,
     omega_step=0.01,
     plot=True,
+    log_writer=print,
     verbose=True,
 ):
     if verbose:
-        print(
+        log_writer(
             f"Find optimal relaxation parameter (ω) for {SOLVER_NAMES[solver.__name__]}\n"
         )
 
@@ -55,7 +56,7 @@ def find_optimal_omega(
         )
         iteration_counts[idx] = len(error_history)
         if verbose:
-            print(
+            log_writer(
                 f"With ω = {omega:.2f}, the {SOLVER_NAMES[solver.__name__]} converged in {len(error_history)} iterations."
             )
 
@@ -64,7 +65,7 @@ def find_optimal_omega(
     best_iters = iteration_counts[best_idx]
 
     if verbose:
-        print(
+        log_writer(
             f"\nOptimal relaxation parameter: ω = {best_omega:.2f}, converging in only {int(best_iters)} iterations."
         )
 
