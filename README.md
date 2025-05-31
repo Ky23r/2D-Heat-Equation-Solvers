@@ -40,11 +40,13 @@ streamlit run app.py
 
 2. **Execution Mode**:
 
-   - **Single-Solver Run**: Select one solver, optionally tune or auto-find ω, then click `Solve`.
+   - **Optimize ω for SOR Method**: Select one solver, then click `Find optimal ω`.
+
+   - **Single-Solver Run**: Select one solver, then click `Solve`.
 
    - **Convergence Performance Analysis**: Tick multiple solvers, set ω values for SOR if needed, then click `Evaluate`.
 
-3. **Output**: Illustrate a graphical representation of the steady-state temperature distribution in the 2D plane, or provide an analysis of the convergence behavior during computation.
+4. **Output**: Illustrate a graphical representation of the steady-state temperature distribution in the 2D plane, or provide an analysis of the convergence behavior during computation.
 
 ### As a Python script-based version
 
