@@ -65,8 +65,6 @@ T_right = get_float("Enter the temperature at the right boundary: ")
 #     1,
 #     2,
 #     0.01,
-#     True,
-#     False,
 # )
 
 # optimal_omega_for_gs_with_9point_sor, _, _ = find_optimal_omega(
@@ -83,8 +81,6 @@ T_right = get_float("Enter the temperature at the right boundary: ")
 #     1,
 #     2,
 #     0.01,
-#     True,
-#     False,
 # )
 
 _, jacobi_error_history, _ = jacobi(

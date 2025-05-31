@@ -4,6 +4,7 @@ from sympy import evaluate
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import time
 import streamlit as st
 import matplotlib.pyplot as plt
 
@@ -15,8 +16,6 @@ from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
 from solvers.gauss_seidel_with_9point_sor import gauss_seidel_with_9point_sor
 from solvers.conjugate_gradient import conjugate_gradient
 
-# st.set_page_config(page_title="2D Heat Equation Solvers", layout="wide")
-# st.title("2D Heat Equation Solvers")
 st.sidebar.header("Input Values")
 
 length_x_str = st.sidebar.text_input(
@@ -130,21 +129,52 @@ if execution_mode == "Single-Solver Run":
         ],
     )
 
-    omega = None
     find_opt_omega = None
 
     if (
         solver == "Gauss-Seidel Iterative Method with 5-Point SOR"
         or solver == "Gauss-Seidel Iterative Method with 9-Point SOR"
     ):
-        omega = st.sidebar.slider("Relaxation parameter (ω)", 1.0, 1.99, 1.5, 0.01)
+        if "omega" not in st.session_state:
+            st.session_state.omega = 1.5
+
+        if "new_omega" in st.session_state:
+            st.session_state.omega = st.session_state.new_omega
+
+            st.sidebar.success(f"Optimal ω = {st.session_state.new_omega:.2f}")
+
+            del st.session_state.new_omega
+
+        if (
+            "omega_values" in st.session_state
+            and "iteration_counts" in st.session_state
+        ):
+            st.subheader(
+                f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
+            )
+
+            fig, ax = plt.subplots()
+            ax.plot(st.session_state.omega_values, st.session_state.iteration_counts)
+            ax.set_xlabel("Relaxation Parameter (ω)")
+            ax.set_ylabel("Iterations to Converge")
+            ax.grid(True)
+            st.pyplot(fig)
+
+            del st.session_state.omega_values
+            del st.session_state.iteration_counts
+
+        st.sidebar.slider("Relaxation parameter (ω)", 1.0, 1.99, step=0.01, key="omega")
+
         find_opt_omega = st.sidebar.button("Find optimal ω automatically")
+
+        verbose = st.sidebar.checkbox("Details", value=True)
 
     if find_opt_omega:
         if solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
             func = gauss_seidel_with_5point_sor
         else:
             func = gauss_seidel_with_9point_sor
+
         best_omega, omega_values, iteration_counts = find_optimal_omega(
             func,
             length_x,
@@ -161,20 +191,15 @@ if execution_mode == "Single-Solver Run":
             omega_step=0.01,
             plot=False,
             log_writer=st.write,
-            verbose=True,
+            verbose=verbose,
         )
-        omega = best_omega
-        st.sidebar.success(f"Optimal ω = {best_omega:.2f}")
 
-        fig, ax = plt.subplots()
-        ax.plot(omega_values, iteration_counts)
-        ax.set_xlabel("Relaxation Parameter (ω)")
-        ax.set_ylabel("Iterations to Converge")
-        ax.set_title(
-            f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
-        )
-        ax.grid(True)
-        st.pyplot(fig)
+        time.sleep(5)
+
+        st.session_state.new_omega = best_omega
+        st.session_state.omega_values = omega_values
+        st.session_state.iteration_counts = iteration_counts
+        st.rerun()
 
     solve = st.sidebar.button("Solve")
 
@@ -191,7 +216,7 @@ if execution_mode == "Single-Solver Run":
                 T_left,
                 T_right,
                 False,
-                False,
+                True,
             )
         elif solver == "Gauss-Seidel Iterative Method":
             T_grid, error_history, elasped_time = gauss_seidel(
@@ -205,7 +230,7 @@ if execution_mode == "Single-Solver Run":
                 T_left,
                 T_right,
                 False,
-                False,
+                True,
             )
         elif solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
             T_grid, error_history, elasped_time = gauss_seidel_with_5point_sor(
@@ -214,13 +239,13 @@ if execution_mode == "Single-Solver Run":
                 nx,
                 ny,
                 convergence_threshold,
-                omega,
+                st.session_state.omega,
                 T_bottom,
                 T_top,
                 T_left,
                 T_right,
                 False,
-                False,
+                True,
             )
         elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
             T_grid, error_history, elasped_time = gauss_seidel_with_9point_sor(
@@ -229,13 +254,13 @@ if execution_mode == "Single-Solver Run":
                 nx,
                 ny,
                 convergence_threshold,
-                omega,
+                st.session_state.omega,
                 T_bottom,
                 T_top,
                 T_left,
                 T_right,
                 False,
-                False,
+                True,
             )
         elif solver == "Conjugate Gradient Method":
             T_grid, error_history, elasped_time = conjugate_gradient(
@@ -249,7 +274,7 @@ if execution_mode == "Single-Solver Run":
                 T_left,
                 T_right,
                 False,
-                False,
+                True,
             )
 
         st.subheader(
