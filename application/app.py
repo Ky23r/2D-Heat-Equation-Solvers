@@ -4,12 +4,11 @@ from sympy import evaluate
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import time
 import streamlit as st
 import matplotlib.pyplot as plt
 
 from utils.create_coordinate_axes import create_coordinate_axes
-from utils.optimizer_for_gauss_seidel_with_sor import find_optimal_omega
+from utils.optimizer_for_sor_method import find_optimal_omega
 from solvers.jacobi import jacobi
 from solvers.gauss_seidel import gauss_seidel
 from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
@@ -114,65 +113,32 @@ st.sidebar.success("✔︎ All input values are valid.")
 x, y, _, _ = create_coordinate_axes(length_x, length_y, nx, ny)
 
 execution_mode = st.sidebar.selectbox(
-    "Execution Mode", ("Single-Solver Run", "Convergence Performance Analysis")
+    "Execution Mode",
+    (
+        "Optimize ω for SOR Method",
+        "Single-Solver Run",
+        "Convergence Performance Analysis",
+    ),
+    index=1,
 )
 
-if execution_mode == "Single-Solver Run":
+if execution_mode == "Optimize ω for SOR Method":
     solver = st.sidebar.selectbox(
         "Select Solver",
         [
-            "Jacobi Iterative Method",
-            "Gauss-Seidel Iterative Method",
             "Gauss-Seidel Iterative Method with 5-Point SOR",
             "Gauss-Seidel Iterative Method with 9-Point SOR",
-            "Conjugate Gradient Method",
         ],
     )
 
-    find_opt_omega = None
+    verbose = st.sidebar.checkbox("Details", value=True)
 
-    if (
-        solver == "Gauss-Seidel Iterative Method with 5-Point SOR"
-        or solver == "Gauss-Seidel Iterative Method with 9-Point SOR"
-    ):
-        if "omega" not in st.session_state:
-            st.session_state.omega = 1.5
-
-        if "new_omega" in st.session_state:
-            st.session_state.omega = st.session_state.new_omega
-
-            st.sidebar.success(f"Optimal ω = {st.session_state.new_omega:.2f}")
-
-            del st.session_state.new_omega
-
-        if (
-            "omega_values" in st.session_state
-            and "iteration_counts" in st.session_state
-        ):
-            st.subheader(
-                f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
-            )
-
-            fig, ax = plt.subplots()
-            ax.plot(st.session_state.omega_values, st.session_state.iteration_counts)
-            ax.set_xlabel("Relaxation Parameter (ω)")
-            ax.set_ylabel("Iterations to Converge")
-            ax.grid(True)
-            st.pyplot(fig)
-
-            del st.session_state.omega_values
-            del st.session_state.iteration_counts
-
-        st.sidebar.slider("Relaxation parameter (ω)", 1.0, 1.99, step=0.01, key="omega")
-
-        find_opt_omega = st.sidebar.button("Find optimal ω automatically")
-
-        verbose = st.sidebar.checkbox("Details", value=True)
+    find_opt_omega = st.sidebar.button("Find optimal ω")
 
     if find_opt_omega:
         if solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
             func = gauss_seidel_with_5point_sor
-        else:
+        elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
             func = gauss_seidel_with_9point_sor
 
         best_omega, omega_values, iteration_counts = find_optimal_omega(
@@ -194,12 +160,68 @@ if execution_mode == "Single-Solver Run":
             verbose=verbose,
         )
 
-        time.sleep(5)
+        if solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
+            st.session_state.best_omega_for_gs_with_5pt_sor = best_omega
+        elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
+            st.session_state.best_omega_for_gs_with_9pt_sor = best_omega
 
-        st.session_state.new_omega = best_omega
-        st.session_state.omega_values = omega_values
-        st.session_state.iteration_counts = iteration_counts
-        st.rerun()
+        st.sidebar.success(f"Optimal ω = {best_omega:.2f}")
+
+        st.subheader(
+            f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
+        )
+
+        fig, ax = plt.subplots()
+        ax.plot(omega_values, iteration_counts)
+        ax.set_xlabel("Relaxation Parameter (ω)")
+        ax.set_ylabel("Iterations to Converge")
+        ax.grid(True)
+        st.pyplot(fig)
+
+elif execution_mode == "Single-Solver Run":
+    solver = st.sidebar.selectbox(
+        "Select Solver",
+        [
+            "Jacobi Iterative Method",
+            "Gauss-Seidel Iterative Method",
+            "Gauss-Seidel Iterative Method with 5-Point SOR",
+            "Gauss-Seidel Iterative Method with 9-Point SOR",
+            "Conjugate Gradient Method",
+        ],
+    )
+
+    omega = None
+
+    if solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
+        current_omega = 1.5
+        if "best_omega_for_gs_with_5pt_sor" in st.session_state:
+            current_omega = st.session_state.best_omega_for_gs_with_5pt_sor
+        omega = st.sidebar.slider(
+            "Relaxation parameter (ω)",
+            1.0,
+            1.99,
+            current_omega,
+            0.01,
+        )
+        if "best_omega_for_gs_with_5pt_sor" in st.session_state:
+            st.sidebar.success(
+                f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_5pt_sor:.2f}."
+            )
+    elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
+        current_omega = 1.5
+        if "best_omega_for_gs_with_9pt_sor" in st.session_state:
+            current_omega = st.session_state.best_omega_for_gs_with_9pt_sor
+        omega = st.sidebar.slider(
+            "Relaxation parameter (ω)",
+            1.0,
+            1.99,
+            current_omega,
+            0.01,
+        )
+        if "best_omega_for_gs_with_9pt_sor" in st.session_state:
+            st.sidebar.success(
+                f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_9pt_sor:.2f}."
+            )
 
     solve = st.sidebar.button("Solve")
 
@@ -239,7 +261,7 @@ if execution_mode == "Single-Solver Run":
                 nx,
                 ny,
                 convergence_threshold,
-                st.session_state.omega,
+                omega,
                 T_bottom,
                 T_top,
                 T_left,
@@ -254,7 +276,7 @@ if execution_mode == "Single-Solver Run":
                 nx,
                 ny,
                 convergence_threshold,
-                st.session_state.omega,
+                omega,
                 T_bottom,
                 T_top,
                 T_left,
@@ -277,9 +299,7 @@ if execution_mode == "Single-Solver Run":
                 True,
             )
 
-        st.subheader(
-            f"Steady-State Temperature Distribution in a 2D Plane Using the {solver}"
-        )
+        st.subheader(f"Steady-State Temperature Distribution in a 2D Plane ({solver})")
         st.write(f"Computation time: {elasped_time:.4f}")
         st.write(f"The {solver} converged after {len(error_history)} iterations.\n")
         fig, ax = plt.subplots()
@@ -317,21 +337,35 @@ elif execution_mode == "Convergence Performance Analysis":
     omega_for_gs_with_9pt_sor = None
 
     if "Gauss-Seidel Iterative Method with 5-Point SOR" in selected_solvers:
+        current_omega = 1.5
+        if "best_omega_for_gs_with_5pt_sor" in st.session_state:
+            current_omega = st.session_state.best_omega_for_gs_with_5pt_sor
         omega_for_gs_with_5pt_sor = st.sidebar.slider(
             "Relaxation parameter (ω) for Gauss-Seidel Iterative Method with 5-Point SOR",
             1.0,
             1.99,
-            1.5,
+            current_omega,
             0.01,
         )
+        if "best_omega_for_gs_with_5pt_sor" in st.session_state:
+            st.sidebar.success(
+                f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_5pt_sor:.2f}."
+            )
     if "Gauss-Seidel Iterative Method with 9-Point SOR" in selected_solvers:
+        current_omega = 1.5
+        if "best_omega_for_gs_with_9pt_sor" in st.session_state:
+            current_omega = st.session_state.best_omega_for_gs_with_9pt_sor
         omega_for_gs_with_9pt_sor = st.sidebar.slider(
             "Relaxation parameter (ω) for Gauss-Seidel Iterative Method with 9-Point SOR",
             1.0,
             1.99,
-            1.5,
+            current_omega,
             0.01,
         )
+        if "best_omega_for_gs_with_9pt_sor" in st.session_state:
+            st.sidebar.success(
+                f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_9pt_sor:.2f}."
+            )
 
     evaluate = st.sidebar.button("Evaluate")
 

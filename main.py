@@ -3,7 +3,7 @@ from solvers.gauss_seidel import gauss_seidel
 from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
 from solvers.gauss_seidel_with_9point_sor import gauss_seidel_with_9point_sor
 from solvers.conjugate_gradient import conjugate_gradient
-from utils.optimizer_for_gauss_seidel_with_sor import find_optimal_omega
+from utils.optimizer_for_sor_method import find_optimal_omega
 from utils.convergence_visualization import plot_convergence_curves
 
 
