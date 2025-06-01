@@ -1,3 +1,4 @@
+from networkx import omega
 from solvers.jacobi import jacobi
 from solvers.gauss_seidel import gauss_seidel
 from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
@@ -51,7 +52,10 @@ T_top = get_float("Enter the temperature at the top boundary: ")
 T_left = get_float("Enter the temperature at the left boundary: ")
 T_right = get_float("Enter the temperature at the right boundary: ")
 
-# optimal_omega_for_gs_with_5point_sor, _, _ = find_optimal_omega(
+omega_for_gs_with_5point_sor = 1.97
+omega_for_gs_with_9point_sor = 1.97
+
+# omega_for_gs_with_5point_sor, _, _ = find_optimal_omega(
 #     gauss_seidel_with_5point_sor,
 #     length_x,
 #     length_y,
@@ -67,7 +71,7 @@ T_right = get_float("Enter the temperature at the right boundary: ")
 #     0.01,
 # )
 
-# optimal_omega_for_gs_with_9point_sor, _, _ = find_optimal_omega(
+# omega_for_gs_with_9point_sor, _, _ = find_optimal_omega(
 #     gauss_seidel_with_9point_sor,
 #     length_x,
 #     length_y,
@@ -93,7 +97,7 @@ _, jacobi_error_history, _ = jacobi(
     T_top,
     T_left,
     T_right,
-    False,
+    True,
     True,
 )
 
@@ -107,7 +111,7 @@ _, gs_error_history, _ = gauss_seidel(
     T_top,
     T_left,
     T_right,
-    False,
+    True,
     True,
 )
 
@@ -122,7 +126,7 @@ _, gs_with_5point_sor_error_history, _ = gauss_seidel_with_5point_sor(
     T_top,
     T_left,
     T_right,
-    False,
+    True,
     True,
 )
 
@@ -137,7 +141,7 @@ _, gs_with_9point_sor_error_history, _ = gauss_seidel_with_9point_sor(
     T_top,
     T_left,
     T_right,
-    False,
+    True,
     True,
 )
 
@@ -151,7 +155,7 @@ _, cg_error_history, _ = conjugate_gradient(
     T_top,
     T_left,
     T_right,
-    False,
+    True,
     True,
 )
 
@@ -160,10 +164,12 @@ plot_convergence_curves(
     gs_error_history,
     gs_with_5point_sor_error_history,
     gs_with_9point_sor_error_history,
+    cg_error_history,
     labels=[
         "Jacobi Iterative Method",
         "Gauss-Seidel Iterative Method",
         "Gauss-Seidel Iterative Method with 5-Point SOR",
         "Gauss-Seidel Iterative Method with 9-Point SOR",
+        "Conjugate Gradient Method",
     ],
 )
