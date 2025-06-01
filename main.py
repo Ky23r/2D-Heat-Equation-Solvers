@@ -1,4 +1,3 @@
-from networkx import omega
 from solvers.jacobi import jacobi
 from solvers.gauss_seidel import gauss_seidel
 from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
@@ -121,7 +120,7 @@ _, gs_with_5point_sor_error_history, _ = gauss_seidel_with_5point_sor(
     nx,
     ny,
     convergence_threshold,
-    1.97,
+    omega_for_gs_with_5point_sor,
     T_bottom,
     T_top,
     T_left,
@@ -136,7 +135,7 @@ _, gs_with_9point_sor_error_history, _ = gauss_seidel_with_9point_sor(
     nx,
     ny,
     convergence_threshold,
-    1.97,
+    omega_for_gs_with_9point_sor,
     T_bottom,
     T_top,
     T_left,
