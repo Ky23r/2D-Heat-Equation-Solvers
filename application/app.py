@@ -13,34 +13,68 @@ from solvers.gauss_seidel_with_5point_sor import gauss_seidel_with_5point_sor
 from solvers.gauss_seidel_with_9point_sor import gauss_seidel_with_9point_sor
 from solvers.conjugate_gradient import conjugate_gradient
 
+
+def clear_optimal_omegas():
+    for key in ["best_omega_for_gs_with_5pt_sor", "best_omega_for_gs_with_9pt_sor"]:
+        if key in st.session_state:
+            del st.session_state[key]
+
+
 st.sidebar.header("Input Values")
 
 length_x_str = st.sidebar.text_input(
-    "Enter the domain length in the x-direction", value="1.0"
+    "Enter the domain length in the x-direction",
+    value="1.0",
+    key="length_x",
+    on_change=clear_optimal_omegas,
 )
 length_y_str = st.sidebar.text_input(
-    "Enter the domain length in the y-direction", value="1.0"
+    "Enter the domain length in the y-direction",
+    value="1.0",
+    key="length_y",
+    on_change=clear_optimal_omegas,
 )
 nx_str = st.sidebar.text_input(
-    "Enter the number of grid points along x (positive integer)", value="50"
+    "Enter the number of grid points along x (positive integer)",
+    value="50",
+    key="nx",
+    on_change=clear_optimal_omegas,
 )
 ny_str = st.sidebar.text_input(
-    "Enter the number of grid points along y (positive integer)", value="50"
+    "Enter the number of grid points along y (positive integer)",
+    value="50",
+    key="ny",
+    on_change=clear_optimal_omegas,
 )
 T_bottom_str = st.sidebar.text_input(
-    "Enter the temperature at the bottom boundary", value="400.0"
+    "Enter the temperature at the bottom boundary",
+    value="400.0",
+    key="T_bottom",
+    on_change=clear_optimal_omegas,
 )
 T_top_str = st.sidebar.text_input(
-    "Enter the temperature at the top boundary", value="200.0"
+    "Enter the temperature at the top boundary",
+    value="200.0",
+    key="T_top",
+    on_change=clear_optimal_omegas,
 )
 T_left_str = st.sidebar.text_input(
-    "Enter the temperature at the left boundary", value="300.0"
+    "Enter the temperature at the left boundary",
+    value="300.0",
+    key="T_left",
+    on_change=clear_optimal_omegas,
 )
 T_right_str = st.sidebar.text_input(
-    "Enter the temperature at the right boundary", value="300.0"
+    "Enter the temperature at the right boundary",
+    value="300.0",
+    key="T_right",
+    on_change=clear_optimal_omegas,
 )
 convergence_threshold_str = st.sidebar.text_input(
-    "Enter the convergence threshold", value="1e-4"
+    "Enter the convergence threshold",
+    value="1e-4",
+    key="convergence_threshold",
+    on_change=clear_optimal_omegas,
 )
 
 
