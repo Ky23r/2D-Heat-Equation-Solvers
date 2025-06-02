@@ -199,11 +199,10 @@ if execution_mode == "Optimize ω for SOR Method":
 
         st.sidebar.success(f"Optimal ω = {best_omega:.2f}")
 
-        st.subheader(
+        fig, ax = plt.subplots()
+        ax.set_title(
             f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
         )
-
-        fig, ax = plt.subplots()
         ax.plot(omega_values, iteration_counts)
         ax.set_xlabel("Relaxation Parameter (ω)")
         ax.set_ylabel("Iterations to Converge")
@@ -479,10 +478,10 @@ elif execution_mode == "Convergence Performance Analysis":
             error_histories.append(error_history)
             labels.append(solver)
         max_iter = 400
-        st.subheader(
+        fig, ax = plt.subplots()
+        ax.set_title(
             f"Convergence Behavior: Maximum Absolute Error Over Iterations (First {max_iter} Iterations)"
         )
-        fig, ax = plt.subplots()
         for error_history, label in zip(error_histories, labels):
             iters_to_plot = min(len(error_history), max_iter)
             ax.plot(
