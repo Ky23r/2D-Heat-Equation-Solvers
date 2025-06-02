@@ -163,6 +163,19 @@ if execution_mode == "Optimize ω for SOR Method":
         ],
     )
 
+    if solver == "Gauss-Seidel Iterative Method with 5-Point SOR":
+        if "best_omega_for_gs_with_5pt_sor" in st.session_state:
+            st.info(
+                f"The optimal relaxation parameter (ω) for the selected solver, based on the current sidebar inputs, has already been computed (ω = {st.session_state.best_omega_for_gs_with_5pt_sor:.2f})."
+            )
+            st.info("If you wish to recompute, please modify one or more input values.")
+    elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
+        if "best_omega_for_gs_with_9pt_sor" in st.session_state:
+            st.info(
+                f"The optimal relaxation parameter (ω) for the selected solver, based on the current sidebar inputs, has already been computed (ω = {st.session_state.best_omega_for_gs_with_5pt_sor:.2f})."
+            )
+            st.info("If you wish to recompute, please modify one or more input values.")
+
     verbose = st.sidebar.checkbox("Details", value=True)
 
     find_opt_omega = st.sidebar.button("Find optimal ω")
@@ -201,7 +214,7 @@ if execution_mode == "Optimize ω for SOR Method":
 
         fig, ax = plt.subplots()
         ax.set_title(
-            f"Influence of the Relaxation Parameter on Convergence Speed ({solver})"
+            f"Influence of the Relaxation Parameter on Convergence Speed\n({solver})"
         )
         ax.plot(omega_values, iteration_counts)
         ax.set_xlabel("Relaxation Parameter (ω)")
@@ -235,7 +248,7 @@ elif execution_mode == "Single-Solver Run":
             0.01,
         )
         if "best_omega_for_gs_with_5pt_sor" in st.session_state:
-            st.sidebar.success(
+            st.sidebar.info(
                 f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_5pt_sor:.2f}."
             )
     elif solver == "Gauss-Seidel Iterative Method with 9-Point SOR":
@@ -250,7 +263,7 @@ elif execution_mode == "Single-Solver Run":
             0.01,
         )
         if "best_omega_for_gs_with_9pt_sor" in st.session_state:
-            st.sidebar.success(
+            st.sidebar.info(
                 f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_9pt_sor:.2f}."
             )
 
@@ -330,10 +343,11 @@ elif execution_mode == "Single-Solver Run":
                 True,
             )
 
-        st.subheader(f"Steady-State Temperature Distribution in a 2D Plane ({solver})")
+        st.subheader(f"{solver}")
         st.write(f"Computation time: {elasped_time:.4f}")
         st.write(f"The {solver} converged after {len(error_history)} iterations.\n")
         fig, ax = plt.subplots()
+        ax.set_title(f"Steady-State Temperature Distribution in a 2D Plane\n({solver})")
         cs = ax.contourf(x, y, T_grid, levels=50)
         fig.colorbar(cs, ax=ax)
         st.pyplot(fig)
@@ -379,7 +393,7 @@ elif execution_mode == "Convergence Performance Analysis":
             0.01,
         )
         if "best_omega_for_gs_with_5pt_sor" in st.session_state:
-            st.sidebar.success(
+            st.sidebar.info(
                 f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_5pt_sor:.2f}."
             )
     if "Gauss-Seidel Iterative Method with 9-Point SOR" in selected_solvers:
@@ -394,7 +408,7 @@ elif execution_mode == "Convergence Performance Analysis":
             0.01,
         )
         if "best_omega_for_gs_with_9pt_sor" in st.session_state:
-            st.sidebar.success(
+            st.sidebar.info(
                 f"The optimal relaxation parameter (ω) is {st.session_state.best_omega_for_gs_with_9pt_sor:.2f}."
             )
 
@@ -480,7 +494,7 @@ elif execution_mode == "Convergence Performance Analysis":
         max_iter = 400
         fig, ax = plt.subplots()
         ax.set_title(
-            f"Convergence Behavior: Maximum Absolute Error Over Iterations (First {max_iter} Iterations)"
+            f"Convergence Behavior: Maximum Absolute Error Over Iterations\n(First {max_iter} Iterations)"
         )
         for error_history, label in zip(error_histories, labels):
             iters_to_plot = min(len(error_history), max_iter)
